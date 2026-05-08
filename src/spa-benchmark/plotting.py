@@ -2,11 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def plot_timing(filename="timing_vs_n.csv"):
+def plot_runtime_scaling(filename="runtime_vs_n.csv"):
     data = pd.read_csv(filename)
 
     for col in data.columns:
-        if col not in ["n", "total_t"]:
+        if col not in ["n", "total"]:
             plt.plot(data["n"], data[col], marker="o", label=col)
 
     plt.yscale("log")
@@ -14,21 +14,36 @@ def plot_timing(filename="timing_vs_n.csv"):
     plt.ylabel("Time (s)")
     plt.legend()
     plt.tight_layout()
-    plt.savefig("timing_vs_n.pdf")
+    plt.savefig("runtime_scaling.pdf")
     plt.close()
 
 
-def plot_accuracy(filename="results_vs_n.csv"):
+def plot_accuracy_scaling(filename="results_vs_n.csv"):
     data = pd.read_csv(filename)
     data = data[data["n"] <= 14]
 
-    plt.plot(data["n"], 1 - data["fid"], "o-", label="1 - Fidelity")
-    plt.plot(data["n"], data["spa"] - data["fci"], "o-", label="Error (eH)")
-
-    plt.xlabel("Number of hydrogens (n)")
-    plt.legend()
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 9), sharex=True)
+    ax1.plot(data["n"], data["spa"]-data["fci"], "o-")
+    ax2.plot(data["n"], data["fid"], "o-")
+    
+    ax1.set_ylabel("SPA error (Hartree)")
+    ax2.set_xlabel("Number of hydrogen atoms)")
+    ax2.set_ylabel("Fidelity")
+    
     plt.tight_layout()
-    plt.savefig("results_vs_n.pdf")
+    plt.savefig("accuracy_scaling.pdf")
+    plt.close()
+
+
+def plot_spa_scaling(filename="results_vs_n.csv"):
+    data = pd.read_csv(filename)
+    plt.plot(data["n"], data["spa"], "o-")
+    
+    plt.ylabel("SPA energy (Hartree)")
+    plt.xlabel("Number of hydrogen atoms)")
+    
+    plt.tight_layout()
+    plt.savefig("spa_scaling.pdf")
     plt.close()
 
 
