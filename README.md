@@ -12,9 +12,6 @@ cd spa-benchmark
 pip install -e .
 ```
 
-You will also need to install Sunrise quantum chemistry package
-pip install git+https://github.com/tequilahub/sunrise.git@devel
-```
 
 ## Generating Data 
 
