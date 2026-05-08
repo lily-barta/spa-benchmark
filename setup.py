@@ -10,7 +10,8 @@ setup(
         "matplotlib", 
         "qulacs",
         "pyscf",
-        "openfermion"
+        "openfermion",
+        "project-sunrise==0.2"
     ],
     url="https://github.com/lily-barta/spa-benchmark",
     author="Lily Barta",
