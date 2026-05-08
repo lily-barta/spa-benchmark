@@ -23,7 +23,6 @@ def plot_accuracy(filename="results_vs_n.csv"):
     data = data[data["n"] <= 14]
 
     plt.plot(data["n"], 1 - data["fid"], "o-", label="1 - Fidelity")
-    plt.plot(data["n"], data["var"], "o-", label="Variance (eH)")
     plt.plot(data["n"], data["spa"] - data["fci"], "o-", label="Error (eH)")
 
     plt.xlabel("Number of hydrogens (n)")
