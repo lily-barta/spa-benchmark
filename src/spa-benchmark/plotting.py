@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import numpy as np
 
 
 def plot_runtime_scaling(filename="runtime_vs_n.csv"):
@@ -36,15 +37,29 @@ def plot_accuracy_scaling(filename="results_vs_n.csv"):
     plt.close()
 
 
-def plot_spa_scaling(filename="results_vs_n.csv"):
+def plot_spa_scaling(filename="results_vs_n.csv", quantity="spa"):
     data = pd.read_csv(filename)
-    plt.plot(data["n"], data["spa"], "o-")
+    if quantity == "spa":
+        y = data["spa"]
+        ylabel = "SPA energy (eH)"
+    elif quantity == "error":
+        if data["fci"].notna().any():
+            y = data["spa"] - data["fci"]
+            ylabel = "SPA error vs FCI (eH)"
+        else:
+            y = data["spa"] - data["ccsdt"]
+            ylabel = "SPA error vs CCSD(T) (eH)"
+    elif quantity == "fidelity":
+        y = data["fid"]
+        ylabel = "Fidelity"
+    else:
+        raise ValueError(f"Unknown quantity '{quantity}'. Choose from 'spa', 'error', 'fidelity'.")
     
-    plt.ylabel("SPA energy (eH)")
-    plt.xlabel("Number of hydrogen atoms)")
-    
+    plt.plot(data["n"], y, "o-")
+    plt.ylabel(ylabel)
+    plt.xlabel("Number of hydrogen atoms")
     plt.tight_layout()
-    plt.savefig("spa_scaling.pdf")
+    plt.savefig(f"{quantity}_scaling.pdf")
     plt.close()
 
 
@@ -107,4 +122,34 @@ def plot_dissociation_accuracy():
     
     plt.tight_layout()
     plt.savefig("dissociation_accuracy.pdf")
+    plt.close()
+
+
+def plot_accuracy_bars(filename=f"results_all.csv"):
+    data = pd.read_csv(filename)
+    molecules = ["$H_2O$", "$NH_3$", "$CH_4$", "$HF$", "$H_2CO$", "$C_2H_4$", "$C_2H_2$", "$CH_3OH$"]
+    
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 9), sharex=True)
+    x = np.arange(len(df["name"]))
+    width = 0.25
+
+    # Top: Error
+    ax1.bar(x - width/2, df_hf["hf"] - df_hf["fci"], width=width, label="HF", color="navy")
+    ax1.bar(x + width/2, df["spa"] - df["fci"], width=width, label="SPA", color="green")
+    ax1.legend(loc=2)
+    ax1.set_yticks(np.arange(0, 1, step=0.04))
+    ax1.set_ylim(0,0.175)
+    ax1.set_ylabel("Error (Hartree)")
+    ax1.xaxis.set_visible(False)
+    
+    # Bottom: Fidelity
+    ax2.bar(x - width/2, df_hf["fid"], width=width, label="HF", color="navy")
+    ax2.bar(x + width/2, df["fid"], width=width, label="SPA", color="green")
+    ax2.set_yticks(np.arange(0, 1.01, step=0.05))
+    ax2.set_ylim(0.89,1.0)
+    ax2.set_ylabel("Fidelity")
+    ax2.set_xticks(range(len(molecules)), molecules)
+    
+    plt.tight_layout()
+    plt.savefig(f"small_molecs.pdf")
     plt.close()
