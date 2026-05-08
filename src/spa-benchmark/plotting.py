@@ -125,7 +125,7 @@ def plot_dissociation_accuracy():
     plt.close()
 
 
-def plot_accuracy_bars(filename=f"results_all.csv"):
+def plot_accuracy_bars(filename="results_all.csv"):
     data = pd.read_csv(filename)
     molecules = ["$H_2O$", "$NH_3$", "$CH_4$", "$HF$", "$H_2CO$", "$C_2H_4$", "$C_2H_2$", "$CH_3OH$"]
     
@@ -155,7 +155,7 @@ def plot_accuracy_bars(filename=f"results_all.csv"):
     plt.close()
 
 
-def plot_fidelity_spectrum(filename=f"h6_spectrum_0.9.csv", bin_width = 0.016):
+def plot_fidelity_spectrum(filename="h6_spectrum_0.9.csv", bin_width = 0.016):
     data = pd.read_csv(filename)
 
     def bin_data(x, y, bins):
