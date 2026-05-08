@@ -195,13 +195,13 @@ def run_single_point(n, distance, nroots=1, get_fci=False, get_hf=False, get_ccs
     """
     return generate_data_point(n=n, iter=0, max_iter=1, d_min=distance, nroots=nroots, get_fci=get_fci, get_ccsdt=get_ccsdt, get_hf=get_hf, verbose=verbose)
 
-def run_scaling(n_min=2, n_max=10, distance=1.0, nroots=1, filename_t="timing_vs_n.csv", filename="results_vs_n.csv", verbose=False):
+def run_scaling(n_min=2, n_max=10, distance=1.0, nroots=1, filename_t="runtime_vs_n.csv", filename="results_vs_n.csv", verbose=False):
     """
     :param n_min: Minimum number of H atoms in H_n chain.
     :param n_max: Maximum number of H atoms in H_n chain.
     :param distance: Interatomic distance (in angstroms).
     :param nroots: Number of FCI eigenstates used as reference. Use nroots > 1 in the presence of near-degeneracies.
-    :param filename_t: Name of the output CSV file containing the runtimes (default "timing_vs_n.csv").
+    :param filename_t: Name of the output CSV file containing the runtimes (default "runtime_vs_n.csv").
     :param filename: Name of the output CSV file for SPA/FCI/fidelity results (default "results_vs_n.csv"). 
     
     :return Generates two CSV files, one row per H_n chain: one for results and one for runtimes.
