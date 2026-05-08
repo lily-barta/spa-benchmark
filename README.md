@@ -4,16 +4,16 @@ This repository contains the raw data and code for benchmarking the Separable Pa
 
 ## Installation
 
+Clone this repository and install in developer mode:
+
 ```bash
 git clone https://github.com/lily-barta/spa-benchmark.git
 cd spa-benchmark
-
-conda create -n myenv python=3.11
-conda activate myenv
-
 pip install -e .
+```
+
+You will also need to install Sunrise quantum chemistry package
 pip install git+https://github.com/tequilahub/sunrise.git@devel
-pip install git+https://github.com/tequilahub/tequila.git@devel
 ```
 
 ## Generating Data 
