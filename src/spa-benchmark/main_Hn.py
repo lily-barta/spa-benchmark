@@ -223,8 +223,56 @@ def run_scaling(n_min=2, n_max=10, distance=1.0, nroots=1, filename_t="runtime_v
             writer.writerow(data)
             writer_t.writerow(data_t)
 
+def run_fidelity_spectrum(n, distance, nroots=100):
+    """
+    :param n: Number of H atoms in H_n chain.
+    :param distance: Interatomic distance (in angstroms).
+    :param nroots: Number of FCI eigenstates to compute.
+
+    :return Generates .cvs file containing all eigenenergies and corresponding SPA/FCI fidelities
+    """
+    # Build tequila/sunrise molecule
+    geometry, distance = generate_geometry(n=n, iter=0, max_iter=1, d_min=distance)
+    mol = sun.Molecule(geometry=geometry,basis_set='sto-3g',transformation='reordered-jordan-wigner').use_native_orbitals()
+
+    # Optimise orbitals
+    edges, guess = get_edges_and_guess(n)
+    opt = sun.SPAFP.run_spa(mol=mol, edges=edges, initial_guess=guess)
+    mol = opt.molecule
+
+    # Fast HCB-SPA VQE
+    U = mol.make_spa_ansatz(edges=edges, hcb=True)
+    H = mol.make_hardcore_boson_hamiltonian()
+    grouping = sun.SPAFP.make_decomposed_clusters(U)
+    vqe_solver = sun.SPAFP.SPASolver(decompose=True,grouping=grouping)
+    spa = vqe_solver(H=H, circuit=U, molecule=mol)
+    wfn_spa = sun.simulate(U, variables=spa.variables)
+
+    if n > 10:
+        print(f"\n!!! Warning !!! \nFCI for H{n} is too expensive. \n")
+        exit()
+    if n == 4:
+        nroots = 36
+
+    # Compute fidelity spectrum
+    ci0 = wfn_spa if n > 8 else None
+    energies, wfns = mol.compute_energy("fci", get_wfn=True, nroots=nroots, ci0=ci0, use_hcb=True)
+    spectrum = []
+    checksum = 0.0
+    for k, wfnk in enumerate(wfns):
+        p = abs(wfnk.inner(wfn_spa)) ** 2
+        checksum += p
+        spectrum.append((energies[k], p))
+
+    print("missing fidelity: ", 1 - checksum)
+    file = open(f"h{n}_spectrum_{distance}.csv", "w", newline="")
+    writer = csv.writer(file)
+    writer.writerow(["Energy", "Fidelity"])
+    writer.writerows(spectrum)
+    file.close()
 
 if __name__ == "__main__":
 
     # run_dissociation(n=4, max_iter=11, d_max=3.0, d_min=1.0, verbose=True, get_fci=True)
-    run_scaling(n_max=30)
+    # run_scaling(n_max=30)
+    run_fidelity_spectrum(4,1.0)
