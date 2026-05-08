@@ -153,3 +153,41 @@ def plot_accuracy_bars(filename=f"results_all.csv"):
     plt.tight_layout()
     plt.savefig(f"small_molecs.pdf")
     plt.close()
+
+
+def plot_fidelity_spectrum(filename=f"h6_spectrum_0.9.csv", bin_width = 0.016):
+    data = pd.read_csv(filename)
+
+    def bin_data(x, y, bins):
+        bin_indices = np.digitize(x, bins)
+        binned_data = {}
+        for b, f in zip(bin_indices, y):
+            if b not in binned_data:
+                binned_data[b] = 0
+            binned_data[b] += f
+    
+        x_binned = [bins[i - 1] + bin_width / 2 for i in binned_data.keys()]
+        y_binned = list(binned_data.values())
+        return x_binned, y_binned
+
+    x = data["Energy"]
+    y = data["Fidelity"]
+    x_min = x.min()
+    x_max = x.max()
+    bins = np.arange(x_min, x_max + bin_width, bin_width)
+    x_binned, y_binned = bin_data(x, y, bins)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.bar(x_binned, y_binned, width=bin_width, linewidth=0.5)
+    ax.axvspan(x_min, x_min + 0.240, alpha=0.2, label="UV-Vis range")
+
+    ax.set_xlabel("Eigenenergy (Hartree)")
+    ax.set_ylabel("Fidelity")
+    ax.set_ylim(0, 1)
+    ax.set_xlim(x_min - 0.02, x_min + 0.5)
+    ax.grid(True)
+    ax.legend()
+    plt.tight_layout()
+    base = filename.replace(".csv", "")
+    plt.savefig(f"fid_spectrum_{base}.pdf")
+    plt.close()
