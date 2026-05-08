@@ -19,9 +19,9 @@ pip install -e .
 Generate a CSV file for a given linear $H_n$ molecule.
 
 ```python
-from spa_benchmark import run_dissociation
+from spa_benchmark.main_Hn import run_dissociation
 
-run_dissociation(n=4, max_iter=31, d_min=0.5, d_max=3.5, get_fci=True, get_var=True)
+run_dissociation(n=4, max_iter=31, d_min=0.5, d_max=3.5, get_fci=True)
 ```
 
 - `n` – Number of H atoms
@@ -35,19 +35,36 @@ Each row of the generated file contains:
 - `spa` – Optimized SPA energy
 - `fci` – Reference FCI ground-state energy (if `get_fci=True`)
 - `fid` – Fidelity between SPA and FCI states (if `get_fci=True`)
-- `var` – Energy variance of the SPA state (if `get_var=True`)
+- `hf` – HF energy (if `get_hf=True`)
+- `hf_fid` - HF/FCI fidelity (if `get_hf=True`)
+- `ccsdt` - CCSD(T) energy (if `get_ccsdt=True`)
 
-### 2. Single-Point Scaling
-Generate data for increasing $H_n$ chain length at a fixed interatomic distance.
+### 2. Runtime and Accuracy Scaling
+Generate data for increasing $H_n$ chain length for a fixed interatomic distance.
 
 ```python
-from spa_benchmark import run_scaling
+from spa_benchmark.main_Hn import run_scaling
 
 run_scaling(n_min=2, n_max=30, distance=1.0)
 ```
 Output CSV files: 
-- `results_vs_n.csv` – SPA/FCI/fidelity/variance vs. n
-- `timing_vs_n.csv` – Total runtime and individual timing contributions vs. n
+- `results_vs_n.csv` – SPA/FCI/fidelity vs. n
+- `runtime_vs_n.csv` – Total runtime and individual runtime contributions vs. n
+
+### 3. SPA/FCI Fidelity Spectrum
+Generate a CSV file containing eigenenergies and corresponding SPA/FCI fidelity for a given linear $H_n$ molecule and interatomic distance.
+
+```python
+from spa_benchmark.main_Hn import run_fidelity_spectrum
+
+run_fidelity_spectrum(n=6, distance=1.0, nroots=100)
+```
+
+- `n` – Number of H atoms
+- `distance` - Interatomic distance
+- `nroots` - Number of FCI eigenstates to compute
+
+Output CSV file: `h{n}_spectrum_{distance}.csv`
 
 Output CSV files are written to the current working directory.
 Pre-generated example data is available in `data_hn/`.
@@ -57,17 +74,13 @@ Pre-generated example data is available in `data_hn/`.
 - **FCI calculations** become computationally demanding for larger systems.  
   For example, a single-point FCI calculation for $H_{14}$ may take approximately **30 minutes to 1 hour**, depending on hardware.  
   For larger chains, FCI becomes prohibitively expensive and is therefore not recommended.
+  In the provided scaling script, FCI calculations are automatically disabled for larger systems to avoid excessive runtimes.
 
-- **Energy variance calculations** are also computationally intensive.  
-  Even for $H_{10}$, the variance evaluation is very slow (**3/4 hours**) and is therefore also not recommended beyond this system size.
-
-- In the provided scaling script, FCI and variance calculations are automatically disabled for larger systems to avoid excessive runtimes.
-
-- **Near-degeneracies at large interatomic distances:**  
-As the $H_n$ chains dissociate, the FCI ground state becomes degenerate.  
-To obtain a meaningful fidelity in this regime, multiple FCI roots must be included.  
-The required number of roots grows rapidly with system size, and for $H_{10}$ it becomes prohibitively expensive.  
-For this reason, fidelity calculations at large separations ($d > 2.5$ Å) are not recommended for larger systems.
+- **Near-degeneracies at large interatomic distances:**
+  As the $H_n$ chains dissociate, the FCI ground state becomes degenerate.  
+  To obtain a meaningful fidelity in this regime, multiple FCI roots must be included.  
+  The required number of roots grows rapidly with system size, and it becomes prohibitively expensive beyond $H_{10}$.  
+  For this reason, fidelity calculations at large separations ($d > 2.5$ Å) is disabled for larger systems.
 
 ## Reproducing Plots
 
