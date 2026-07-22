@@ -146,6 +146,10 @@ if __name__ == "__main__":
     # filename = "small_molecs.csv"
     # filename_t = "small_molecs_t.csv"
 
+    # molecules = ['c2h4', 'c4h6', 'c6h8', 'c8h10', 'c10h12', 'c12h14', 'c14h16']
+    # filename = "pi_sys.csv"
+    # filename_t = "pi_sys_t.csv"
+
     for mol in molecules:
         generate_data_point(
             geometry=f"geometries/{mol}.xyz",
