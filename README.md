@@ -129,7 +129,7 @@ Each call appends one row to the output CSVs:
 ---
 
 All output CSV files are written to the current working directory.
-Pre-generated example data is available in `data_hn/`.
+Pre-generated example data is available in `data_files/`.
 
 ## Notes on Computational Cost
 
