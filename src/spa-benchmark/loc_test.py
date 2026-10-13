@@ -77,7 +77,7 @@ def localize_spa_orbitals(mol, localization="clpo", edges=None):
     return localized_mol, edges
 
 
-def generate_data_point(geometry, verbose=True, filename=None, save_to_csv=True,
+def run_loc_test(geometry, verbose=True, filename=None, save_to_csv=True,
                         localization="clpo", edges=None, plot_orbitals=False):
     """
     :param geometry: Geometry string or path to .xyz file.
@@ -170,7 +170,7 @@ def generate_data_point(geometry, verbose=True, filename=None, save_to_csv=True,
 if __name__ == "__main__":
 
     edges = [{0, 15}, {1, 22}, {16, 2}, {3, 14}, {25, 4}, {19, 5}, {17, 6}, {18, 7}, {8, 20}, {24, 9}, {10, 13}, {11, 21}, {12, 23}]
-    result = generate_data_point(
+    result = run_loc_test(
         geometry="../geometries/c4h10.xyz",
         localization="boys",
         plot_orbitals=False,
@@ -178,13 +178,13 @@ if __name__ == "__main__":
     )
     
     # for method in ["clpo","boys","pm"]:
-    #     result = generate_data_point(
+    #     result = run_loc_test(
     #         geometry="../geometries/alkenes/c4h6.xyz",
     #         localization=method,
     #         plot_orbitals=False
     #     )
     # for method in ["clpo","boys","pm"]:
-    #     result = generate_data_point(
+    #     result = run_loc_test(
     #         geometry="../geometries/c4h10.xyz",
     #         localization=method,
     #         plot_orbitals=False
